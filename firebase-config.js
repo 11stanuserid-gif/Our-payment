@@ -6,12 +6,13 @@
 // ╚══════════════════════════════════════════════════════════════╝
 
 var FIREBASE_CONFIG = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID",
+  apiKey: "AIzaSyChZlSzBG6kH-a14k6FiFqDRUu7BMbcZ_I",
+  authDomain: "dgsell.firebaseapp.com",
+  databaseURL: "https://dgsell-default-rtdb.firebaseio.com",
+  projectId: "dgsell",
+  storageBucket: "dgsell.firebasestorage.app",
+  messagingSenderId: "93914740482",
+  appId: "1:93914740482:web:b4f3eb43c9b00cae1e741b"
 };
 
 var SYNEX_CONFIG = {
