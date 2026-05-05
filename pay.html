@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Pay — Synex Pay</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05050e;--card:#11112a;--border:#1a1a35;--p:#6d28d9;--pl:#8b5cf6;--pg:linear-gradient(135deg,#6d28d9,#8b5cf6);--cyan:#22d3ee;--green:#10b981;--red:#ef4444;--amber:#f59e0b;--text:#eeeeff;--sub:#8888bb;--muted:#333360;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;overflow:hidden;}
+.amb{position:fixed;pointer-events:none;border-radius:50%;}
+.amb1{top:-20%;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(circle,rgba(109,40,217,.1) 0%,transparent 70%);}
+.amb2{bottom:-20%;right:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(34,211,238,.07) 0%,transparent 70%);}
+.card{position:relative;z-index:1;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2rem 1.8rem;width:100%;max-width:390px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.card::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--p),var(--cyan),transparent);}
+.logo{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:1.8rem;}
+.logo-ico{width:32px;height:32px;border-radius:8px;background:var(--pg);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:.9rem;font-weight:700;color:#fff;}
+.logo-txt{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:1px;}
+.logo-txt em{color:var(--cyan);font-style:normal;}
+#area-loading{padding:2rem 0;}
+.spinner{width:36px;height:36px;border:2.5px solid var(--border);border-top-color:var(--p);border-radius:50%;margin:0 auto 1rem;animation:spin .75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:.72rem;color:var(--sub);}
+#area-pay{display:none;}
+.merchant{font-size:.55rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem;}
+.amount{font-family:'Rajdhani',sans-serif;font-size:3.5rem;font-weight:700;color:var(--cyan);letter-spacing:-2px;line-height:1;margin-bottom:.3rem;}
+.note-txt{font-size:.78rem;color:var(--sub);min-height:1rem;margin-bottom:1.3rem;}
+.qr-wrap{background:#fff;border-radius:14px;padding:13px;display:inline-block;margin-bottom:1.1rem;box-shadow:0 0 0 1px rgba(34,211,238,.1),0 12px 40px rgba(0,0,0,.4);}
+.qr-wrap img{display:block;width:210px;height:210px;}
+.timer{display:inline-flex;align-items:center;gap:.4rem;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);border-radius:100px;padding:.32rem .9rem;margin-bottom:1.3rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--amber);}
+.tdot{width:5px;height:5px;border-radius:50%;background:var(--amber);animation:blink 1.2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.upi-btn{display:block;width:100%;background:var(--pg);border:none;border-radius:11px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;padding:.85rem;cursor:pointer;text-decoration:none;transition:.2s;box-shadow:0 6px 20px rgba(109,40,217,.3);margin-bottom:.7rem;}
+.upi-btn:hover{opacity:.9;transform:translateY(-1px);}
+.upi-chip{display:block;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem;cursor:pointer;transition:.2s;text-align:center;}
+.upi-chip:hover{border-color:var(--cyan);color:var(--cyan);}
+.screen{display:none;flex-direction:column;align-items:center;gap:.75rem;padding:1.5rem 0;}
+.screen.on{display:flex;}
+.screen-ico{font-size:4rem;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.screen-title{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;}
+.screen-title.green{color:var(--green);}
+.screen-title.red{color:var(--red);}
+.screen-title.gray{color:var(--sub);}
+.screen-sub{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--sub);text-align:center;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="amb amb1"></div>
+<div class="amb amb2"></div>
+<div class="card">
+  <div class="logo">
+    <div class="logo-ico">S</div>
+    <div class="logo-txt">SYNEX <em>PAY</em></div>
+  </div>
+  <div id="area-loading">
+    <div class="spinner"></div>
+    <div class="loading-txt">Loading payment...</div>
+  </div>
+  <div id="area-pay">
+    <div class="merchant" id="merchant-name">SYNEX PAY</div>
+    <div class="amount" id="pay-amount">₹0</div>
+    <div class="note-txt" id="pay-note"></div>
+    <div class="qr-wrap"><img id="pay-qr" src="" alt="UPI QR" width="210" height="210"></div>
+    <br>
+    <div class="timer"><div class="tdot"></div><span id="timer-el">30:00</span></div>
+    <a class="upi-btn" id="upi-btn" href="#">⚡ Open UPI App</a>
+    <div class="upi-chip" id="upi-chip">UPI ID: Loading...</div>
+  </div>
+  <div class="screen" id="screen-ok">
+    <div class="screen-ico">🎉</div>
+    <div class="screen-title green">Payment Done!</div>
+    <div class="screen-sub" id="ok-detail">Confirmed successfully</div>
+  </div>
+  <div class="screen" id="screen-fail">
+    <div class="screen-ico">❌</div>
+    <div class="screen-title red">Payment Failed</div>
+    <div class="screen-sub">Please try again or contact support</div>
+  </div>
+  <div class="screen" id="screen-exp">
+    <div class="screen-ico">⏳</div>
+    <div class="screen-title gray">Link Expired</div>
+    <div class="screen-sub">This payment link has expired</div>
+  </div>
+  <div class="screen" id="screen-404">
+    <div class="screen-ico">🔍</div>
+    <div class="screen-title gray">Not Found</div>
+    <div class="screen-sub">Invalid payment link</div>
+  </div>
+</div>
+
+<script src="firebase-config.js"></script>
+<script>
+var API = SYNEX_CONFIG.API;
+
+// Works with both:
+// GitHub Pages: pay.html?id=pay_xxx
+// Netlify:      /pay/pay_xxx  (via 404.html redirect)
+function getPaymentId() {
+  var qs  = new URLSearchParams(window.location.search);
+  var qid = qs.get('id');
+  if (qid) return qid;
+  var path  = window.location.pathname;
+  var match = path.match(/\/pay\/([^\/]+)/);
+  return match ? match[1] : '';
+}
+
+var pid = getPaymentId();
+var timerInt = null;
+
+function show(n) {
+  document.getElementById('area-loading').style.display = 'none';
+  document.getElementById('area-pay').style.display     = n === 'pay' ? 'block' : 'none';
+  ['ok','fail','exp','404'].forEach(function(s) {
+    document.getElementById('screen-'+s).className = 'screen' + (n === s ? ' on' : '');
+  });
+}
+
+function startTimer(createdAt) {
+  var exp = new Date(createdAt).getTime() + 30*60*1000;
+  timerInt = setInterval(function() {
+    var left = Math.floor((exp - Date.now()) / 1000);
+    var el   = document.getElementById('timer-el');
+    if (left <= 0) { clearInterval(timerInt); el.textContent = 'Expired'; show('exp'); return; }
+    var m = Math.floor(left/60), s = left % 60;
+    el.textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  }, 1000);
+}
+
+function copyUpi(id) {
+  navigator.clipboard.writeText(id).then(function() {
+    var c = document.getElementById('upi-chip');
+    var o = c.textContent;
+    c.textContent = '✅ Copied!';
+    setTimeout(function(){ c.textContent = o; }, 1500);
+  });
+}
+
+function markOk(detail)  { clearInterval(timerInt); if(detail) document.getElementById('ok-detail').textContent = detail; show('ok'); }
+function markFail()       { clearInterval(timerInt); show('fail'); }
+function markExp()        { clearInterval(timerInt); show('exp'); }
+
+// Load payment
+if (!pid) {
+  show('404');
+} else {
+  fetch(API + '/api/v1/payment/full/' + pid)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.success) { show('404'); return; }
+      var p = d.payment;
+      if (p.status === 'paid')     { markOk('Paid ₹'+p.amount+' at '+new Date(p.paidAt).toLocaleTimeString()); return; }
+      if (p.status === 'failed')   { markFail(); return; }
+      if (p.status === 'expired')  { markExp();  return; }
+      if (p.status === 'refunded') { markOk('Amount refunded'); return; }
+
+      document.getElementById('pay-amount').textContent = '₹' + p.amount;
+      document.getElementById('pay-note').textContent   = p.note || '';
+      document.getElementById('pay-qr').src             = p.qrCode;
+      document.getElementById('upi-btn').href           = p.upiIntent;
+      document.getElementById('upi-chip').textContent   = 'UPI: ' + p.upiId + ' (tap to copy)';
+      document.getElementById('upi-chip').onclick       = function() { copyUpi(p.upiId); };
+      show('pay');
+      startTimer(p.createdAt);
+      connectSocket();
+    })
+    .catch(function() { show('404'); });
+}
+
+function connectSocket() {
+  var s = document.createElement('script');
+  s.src = API + '/socket.io/socket.io.js';
+  s.onload = function() {
+    var socket = io(API);
+    socket.emit('subscribe_payment', pid);
+    socket.on('payment_state',   function(d) { if(d.status==='paid') markOk('Paid ₹'+d.amount); if(d.status==='failed') markFail(); if(d.status==='expired') markExp(); });
+    socket.on('payment_success', function(d) { markOk('Paid ₹'+d.amount+' at '+new Date(d.paidAt).toLocaleTimeString()); });
+    socket.on('payment_failed',  markFail);
+    socket.on('payment_expired', markExp);
+    socket.on('payment_refunded',function() { markOk('Amount refunded'); });
+  };
+  document.head.appendChild(s);
+}
+</script>
+</body>
+</html>
