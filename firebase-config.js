@@ -5,8 +5,8 @@
 // ║  Firebase Console → Project Settings → Your Apps → SDK      ║
 // ╚══════════════════════════════════════════════════════════════╝
 
-const firebaseConfig = {
-  apiKey: "AIzaSyChZlSz8G6KH-a14k6FiFqORUu7BMbcZ_I",
+var FIREBASE_CONFIG = {
+  apiKey: "AIzaSyChZlSzBG6kH-a14k6FiFqDRUu7BMbcZ_I",
   authDomain: "dgsell.firebaseapp.com",
   databaseURL: "https://dgsell-default-rtdb.firebaseio.com",
   projectId: "dgsell",
