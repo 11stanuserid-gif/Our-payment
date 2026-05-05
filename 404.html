@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Synex Pay</title>
+<script>
+// GitHub Pages 404 trick — redirect /pay/ID to pay.html?id=ID
+var path = window.location.pathname;
+var match = path.match(/\/pay\/([^\/]+)/);
+if (match) {
+  window.location.replace('/pay.html?id=' + match[1]);
+} else {
+  window.location.replace('/login.html');
+}
+</script>
+</head>
+<body></body>
+</html>
